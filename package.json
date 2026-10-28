@@ -1,0 +1,17 @@
+{
+  "name": "whatsapp-pake-linux",
+  "version": "1.0.1",
+  "private": true,
+  "description": "Reproducible packaging tools for an unofficial Pake WhatsApp build",
+  "scripts": {
+    "tauri": "tauri",
+    "validate": "python3 scripts/validate.py",
+    "build:deb": "bash scripts/build.sh deb",
+    "build:rpm": "bash scripts/build.sh rpm",
+    "build:appimage": "bash scripts/build.sh appimage",
+    "build:arch": "bash scripts/build.sh arch"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.10.1"
+  }
+}

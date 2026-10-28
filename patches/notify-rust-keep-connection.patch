@@ -1,0 +1,21 @@
+--- a/src/xdg/zbus_rs.rs
++++ b/src/xdg/zbus_rs.rs
+@@ -171,7 +171,17 @@
+     notification: &Notification,
+     bus: NotificationBus,
+ ) -> Result<ZbusNotificationHandle> {
+-    let connection = zbus::Connection::session().await?;
++    // GNOME removes app-associated notifications when their D-Bus sender leaves.
++    // Keep a shared session connection alive for the lifetime of the process.
++    static SESSION_CONNECTION: std::sync::OnceLock<zbus::Connection> =
++        std::sync::OnceLock::new();
++    let connection = match SESSION_CONNECTION.get() {
++        Some(connection) => connection.clone(),
++        None => {
++            let connection = zbus::Connection::session().await?;
++            SESSION_CONNECTION.get_or_init(|| connection).clone()
++        }
++    };
+     let inner_id = notification.id.unwrap_or(0);
+     let id =
+         send_notification_via_connection_at_bus(notification, inner_id, &connection, bus).await?;

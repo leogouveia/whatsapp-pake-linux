@@ -1,0 +1,8 @@
+/src-tauri/target/
+/src-tauri/gen/
+/src-tauri/.pake/
+/node_modules/
+/out/
+*.log
+*.pid
+.DS_Store

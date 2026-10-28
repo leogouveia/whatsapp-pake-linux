@@ -1,0 +1,143 @@
+name: Build and publish Linux release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing version tag to build (for example v1.0.1)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+  CARGO_TERM_COLOR: always
+
+jobs:
+  ubuntu:
+    name: Ubuntu / ${{ matrix.format }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        format: [deb, appimage]
+    env:
+      BUILD_FLAVOR: ubuntu22.04
+      APPIMAGE_EXTRACT_AND_RUN: '1'
+      NO_STRIP: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential curl wget file libwebkit2gtk-4.1-dev libgtk-3-dev libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev patchelf squashfs-tools libfuse2 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-libav
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Build package with both patches and DevTools
+        run: bash scripts/build.sh '${{ matrix.format }}'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-${{ matrix.format }}
+          path: out/*
+          if-no-files-found: error
+
+  fedora:
+    name: Fedora 44 / RPM
+    runs-on: ubuntu-latest
+    container: fedora:44
+    timeout-minutes: 60
+    env:
+      BUILD_FLAVOR: fedora44
+    steps:
+      - name: Install Fedora build dependencies
+        run: dnf install -y git gcc gcc-c++ make pkgconf-pkg-config python3 curl wget file openssl-devel webkit2gtk4.1-devel gtk3-devel libappindicator-gtk3-devel librsvg2-devel libxdo-devel rpm-build
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: bash scripts/build.sh rpm
+      - name: Inspect RPM metadata and dependencies
+        run: rpm -qip out/*.rpm && rpm -qpR out/*.rpm
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-rpm
+          path: out/*
+          if-no-files-found: error
+
+  arch:
+    name: Arch Linux / pacman
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
+    timeout-minutes: 60
+    steps:
+      - name: Install Arch build dependencies
+        run: pacman -Syu --noconfirm --needed git rust cargo python webkit2gtk-4.1 gtk3 libappindicator-gtk3 librsvg xdotool openssl file libarchive zstd
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - run: bash scripts/build.sh arch
+      - name: Inspect pacman metadata and dependencies
+        run: pacman -Qip out/*.pkg.tar.zst && pacman -Qlp out/*.pkg.tar.zst
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-arch
+          path: out/*
+          if-no-files-found: error
+
+  publish:
+    name: Publish all four formats together
+    needs: [ubuntu, fedora, arch]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: linux-*
+          path: out
+          merge-multiple: true
+      - name: Require all four formats
+        run: |
+          python3 scripts/validate.py
+          python3 - <<'PYCODE'
+          from pathlib import Path
+          for suffix in ('.rpm', '.deb', '.AppImage', '.pkg.tar.zst'):
+              files = list(Path('out').glob('*' + suffix))
+              assert len(files) == 1, (suffix, files)
+          PYCODE
+      - name: Archive complete sources and calculate SHA256
+        run: bash scripts/source-archive.sh && python3 scripts/checksums.py out
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$RELEASE_TAG" --json isDraft --jq .isDraft > /tmp/release-is-draft; then
+            test "$(cat /tmp/release-is-draft)" = true || { echo 'Refusing to overwrite a published release; bump the version.'; exit 1; }
+            gh release upload "$RELEASE_TAG" out/* --clobber
+          else
+            gh release create "$RELEASE_TAG" out/* --verify-tag --draft --title "WhatsApp Pake Linux $RELEASE_TAG" --notes-file docs/RELEASE-NOTES.md
+          fi
+          gh release edit "$RELEASE_TAG" --draft=false --latest

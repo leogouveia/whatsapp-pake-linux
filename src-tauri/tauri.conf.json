@@ -1,0 +1,57 @@
+{
+  "productName": "whatsapp",
+  "identifier": "com.pake.ab7ae24",
+  "version": "1.0.1",
+  "app": {
+    "withGlobalTauri": true,
+    "security": {
+      "headers": {},
+      "csp": null
+    }
+  },
+  "build": {
+    "frontendDist": "../web-assets"
+  },
+  "bundle": {
+    "icon": [
+      "png/whatsapp_512.png"
+    ],
+    "active": true,
+    "linux": {
+      "deb": {
+        "depends": [
+          "libwebkit2gtk-4.1-0",
+          "libgtk-3-0",
+          "libayatana-appindicator3-1"
+        ],
+        "desktopTemplate": "assets/whatsapp.desktop"
+      },
+      "rpm": {
+        "depends": [
+          "webkit2gtk4.1",
+          "gtk3",
+          "libappindicator-gtk3"
+        ],
+        "desktopTemplate": "assets/whatsapp.desktop",
+        "release": "1"
+      },
+      "appimage": {
+        "bundleMediaFramework": true
+      }
+    },
+    "targets": [
+      "deb",
+      "rpm",
+      "appimage"
+    ],
+    "resources": [
+      "png/whatsapp_512.png"
+    ],
+    "shortDescription": "Unofficial WhatsApp Web app with Linux integration fixes",
+    "longDescription": "WhatsApp Web packaged with Pake. Includes persistent D-Bus notification delivery, native GTK Wayland decorations, and enabled developer tools. Unofficial community build.",
+    "homepage": "https://github.com/leogouveia/whatsapp-pake-linux",
+    "license": "GPL-3.0-or-later",
+    "publisher": "leogouveia"
+  },
+  "mainBinaryName": "pake-whatsapp"
+}
