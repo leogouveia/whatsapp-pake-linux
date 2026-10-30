@@ -1,6 +1,6 @@
 [package]
 name = "pake"
-version = "1.0.1"
+version = "1.0.2"
 description = "Unofficial WhatsApp Web desktop app with Linux integration fixes."
 authors = ["Tw93"]
 license = "GPL-3.0-or-later"

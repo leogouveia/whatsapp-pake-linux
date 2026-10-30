@@ -42,9 +42,10 @@ O menu de aplicativos mostra **WhatsApp**. O executável é `pake-whatsapp`.
 |---|---|---|
 | Notificação aceita pelo D-Bus, mas nenhum banner aparece | `notify-rust` reutiliza uma conexão de sessão que permanece viva | Banner sintético e mensagem real confirmados; remetente D-Bus vivo após 30 segundos |
 | X da janela não responde até redimensionar | Tao deixa o GTK criar a decoração padrão no Wayland | X confirmado na primeira abertura e após ocultar/reabrir pela bandeja |
+| Barra de título não permite arrastar a janela | Eventos do mouse continuam para o GTK, com deduplicação no Tao | Arraste, X e cliques confirmados antes e após ocultar/reabrir |
 | Necessidade de investigar o aplicativo | DevTools ativo mesmo na compilação otimizada | Menu **View → Toggle Developer Tools**, atalho **Ctrl+Alt+I** |
 
-Os testes interativos originais foram feitos em **CachyOS, GNOME Shell 51.1 e Wayland**, em 28/10/2026. Os builds de release verificam a compilação e o empacotamento em outros ambientes; isso **não substitui um teste visual em cada desktop**. Veja [a matriz de suporte](docs/BUILD.md#ambientes-e-compatibilidade).
+Os testes interativos foram feitos em **CachyOS, GNOME Shell 51.1 e Wayland**, em 28/10/2026 e 30/10/2026. Os builds de release verificam a compilação e o empacotamento em outros ambientes; isso **não substitui um teste visual em cada desktop**. Veja [a matriz de suporte](docs/BUILD.md#ambientes-e-compatibilidade).
 
 ## Comportamento da janela
 

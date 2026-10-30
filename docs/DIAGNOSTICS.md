@@ -66,7 +66,7 @@ No Tao 0.34.5, os handlers de movimento, pressionamento e soltura do mouse retor
 
 **Patch:** `patches/tao-gtk-event-propagation.patch`, extraído do commit upstream [`07f3742b`](https://github.com/tauri-apps/tao/commit/07f3742b) / PR 1218 e aplicado sem alterações de conteúdo à cópia local. Foram ajustados apenas os offsets de aplicação. O patch de notificações permanece inalterado.
 
-Validação: compilação otimizada concluída com sucesso e patch conferido contra o diff upstream. Teste interativo de arraste, X e reabertura ainda pendente de confirmação do usuário. Não considerar o teste visual concluído apenas porque o build passou.
+Validação em 30/10/2026: compilação otimizada concluída com sucesso e patch conferido contra o diff upstream. O usuário confirmou que o arraste funciona antes e depois de ocultar/reabrir, mantendo o X e os cliques dentro do WhatsApp funcionando. A correção é incluída na versão 1.0.2.
 
 ## 4. O que foi preservado
 

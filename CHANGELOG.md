@@ -1,9 +1,10 @@
 # Changelog
 
-## Unreleased
+## 1.0.2 — 2026-10-30
 
 - Fix the native GTK titlebar drag regression by backporting Tao's upstream mouse event propagation and deduplication changes (PR 1218 / commit 07f3742b).
 - Preserve the notification fix, working close button and enabled DevTools.
+- User verified titlebar dragging before and after hiding/reopening, the close button, and normal clicks inside WhatsApp on CachyOS/GNOME/Wayland.
 
 ## 1.0.1 — 2026-10-28
 

@@ -1,18 +1,16 @@
-Unofficial WhatsApp Web desktop app based on Pake, with Linux integration fixes and DevTools enabled.
+## 1.0.2 — GTK titlebar dragging fixed
 
-Included fixes:
-- Persistent D-Bus notification connection for GNOME.
-- Native GTK window decorations on Wayland.
-- DevTools available through View → Toggle Developer Tools / Ctrl+Alt+I.
+Fixes a regression in 1.0.1: the native GTK titlebar could not move the window because Tao consumed mouse events before GTK handled them. This release backports the remaining upstream propagation and deduplication changes from Tao PR 1218 (commit 07f3742b).
 
-Choose one installer:
+Manually verified by the user on CachyOS/GNOME/Wayland: dragging the window, hiding through X, reopening from the tray, dragging again, and normal clicks inside WhatsApp. The notification fix and enabled DevTools remain unchanged.
+
+### Downloads
+
 - Fedora 44: `.rpm`.
 - Ubuntu 22.04+ / compatible Debian: `.deb`.
 - Arch / CachyOS: `.pkg.tar.zst`.
 - Compatible Linux desktops: `.AppImage` (make executable before running).
 
-The X hides the window to the tray. Use Quit/Sair to exit. GNOME tray integration may require an AppIndicator extension.
+The X hides the window to the tray. Use Quit/Sair to exit. DevTools: View → Toggle Developer Tools / Ctrl+Alt+I. Application identity and profile location are preserved during upgrades.
 
-Manual behavior was validated in the original local build on CachyOS/GNOME 51.1/Wayland. CI compiles and packages the other formats; it does not claim a visual desktop test on every distro. See the README and docs for compatibility and installation details.
-
-The source archive includes both patched dependencies and build scripts. SHA256SUMS covers the release downloads. No login/session data is included. This project is not affiliated with WhatsApp or Meta.
+CI compiles and packages all four formats; it does not claim a visual desktop test on every distro. Complete sources and SHA256SUMS are attached. This unofficial Pake-based project is not affiliated with WhatsApp or Meta.
