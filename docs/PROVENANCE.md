@@ -33,3 +33,5 @@ A configuração original foi recuperada do aplicativo instalado e de metadados 
 Os relatórios locais foram reescritos para remover caminhos de usuário e identificadores de sessão. A evidência preservada está em DIAGNOSTICS.md.
 
 Ícones de outros aplicativos e formatos de empacotamento fora do Linux foram removidos do snapshot para manter o repositório focado; os fontes multiplataforma das dependências vendorizadas foram preservados.
+
+Em 30/10/2026, a adaptação de eventos do PR 1218 foi completada com patches/tao-gtk-event-propagation.patch para corrigir a regressão no arraste da barra de título.

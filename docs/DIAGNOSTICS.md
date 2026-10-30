@@ -58,7 +58,17 @@ Referências primárias:
 - [Tao #1046: decorações customizadas no Wayland](https://github.com/tauri-apps/tao/issues/1046), incluindo relatos sobre GNOME e hide/show.
 - [Tao PR #1218: correção de decorações e eventos](https://github.com/tauri-apps/tao/pull/1218).
 
-## 3. O que foi preservado
+## 3. Regressão: a barra de título não arrasta a janela
+
+Em 30/10/2026, o usuário relatou que a barra de título não permitia mover a janela. A primeira adaptação do PR 1218 havia removido a decoração customizada, mas não incluía as mudanças de propagação de eventos necessárias para o GTK padrão.
+
+No Tao 0.34.5, os handlers de movimento, pressionamento e soltura do mouse retornavam `glib::Propagation::Stop`. O GTK não recebia esses eventos para executar o arraste nativo da barra. A correção completa essa parte da adaptação: usa `Proceed` e evita o encaminhamento duplicado de eventos ao Tao, preservando os controles da janela.
+
+**Patch:** `patches/tao-gtk-event-propagation.patch`, extraído do commit upstream [`07f3742b`](https://github.com/tauri-apps/tao/commit/07f3742b) / PR 1218 e aplicado sem alterações de conteúdo à cópia local. Foram ajustados apenas os offsets de aplicação. O patch de notificações permanece inalterado.
+
+Validação: compilação otimizada concluída com sucesso e patch conferido contra o diff upstream. Teste interativo de arraste, X e reabertura ainda pendente de confirmação do usuário. Não considerar o teste visual concluído apenas porque o build passou.
+
+## 4. O que foi preservado
 
 - URL `https://web.whatsapp.com` e configuração de janela do aplicativo original.
 - Identidade `com.pake.ab7ae24`, para preservar o perfil nas atualizações locais.

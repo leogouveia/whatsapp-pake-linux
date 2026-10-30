@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Fix the native GTK titlebar drag regression by backporting Tao's upstream mouse event propagation and deduplication changes (PR 1218 / commit 07f3742b).
+- Preserve the notification fix, working close button and enabled DevTools.
+
 ## 1.0.1 — 2026-10-28
 
 First public source snapshot and automated multi-format release pipeline.
